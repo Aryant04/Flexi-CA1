@@ -1,0 +1,107 @@
+import sys
+import os
+import json
+import datetime
+import logging
+from selenium import webdriver
+from pyotp import TOTP
+from kiteconnect import KiteTicker
+import pandas as pd
+from kiteconnect import KiteConnect
+import selenium.webdriver.chrome.service as service
+import time
+import datetime as dt
+
+
+logging.basicConfig(level=logging.DEBUG)
+
+duration = 29
+f_final = {}
+Alltoken = []
+
+
+
+
+def auto_login():
+    token_path="api_key2.txt"
+    key_secret = open(token_path, 'r').read().split()
+    kite = KiteConnect(api_key=key_secret[0])
+    Service = service.Service(r'C:\Users\deepa\Desktop\python_venv2\chromedriver.exe')
+    Service.start() 
+    driver = webdriver.Remote(Service.service_url)
+    driver.get(kite.login_url())
+    driver.implicitly_wait(10)
+    username = driver.find_element_by_xpath("//input[@type = 'text']")
+    password = driver.find_element_by_xpath("//input[@type = 'password']")
+    username.send_keys(key_secret[2])
+    password.send_keys(key_secret[3])
+    driver.find_element_by_xpath("//button[@type='submit']").click()
+    totp = TOTP(key_secret[4])
+    token = totp.now()
+    driver.find_element_by_xpath("//input[@label='External TOTP']").send_keys(token)
+    time.sleep(5)
+    request_token = driver.current_url.split('request_token=')[1][:32]
+    with open('request_token.txt', 'w') as the_file :
+        the_file.write(request_token)
+    driver.quit()
+    request_token = open("request_token.txt", "r").read()
+    key_secret = open("api_key2.txt", "r").read().split()
+    kite = KiteConnect(api_key=key_secret[0])
+    data = kite.generate_session(request_token, api_secret=key_secret[1])
+    with open('access_token.txt', 'w') as file:
+        file.write(data["access_token"])
+    print("Auto login completed")
+    return driverimport sys
+import os
+import json
+import datetime
+import logging
+from selenium import webdriver
+from pyotp import TOTP
+from kiteconnect import KiteTicker
+import pandas as pd
+from kiteconnect import KiteConnect
+import selenium.webdriver.chrome.service as service
+import time
+import datetime as dt
+
+
+logging.basicConfig(level=logging.DEBUG)
+
+duration = 29
+f_final = {}
+Alltoken = []
+
+
+
+
+def auto_login():
+    token_path="api_key2.txt"
+    key_secret = open(token_path, 'r').read().split()
+    kite = KiteConnect(api_key=key_secret[0])
+    Service = service.Service(r'C:\Users\deepa\Desktop\python_venv2\chromedriver.exe')
+    Service.start() 
+    driver = webdriver.Remote(Service.service_url)
+    driver.get(kite.login_url())
+    driver.implicitly_wait(10)
+    username = driver.find_element_by_xpath("//input[@type = 'text']")
+    password = driver.find_element_by_xpath("//input[@type = 'password']")
+    username.send_keys(key_secret[2])
+    password.send_keys(key_secret[3])
+    driver.find_element_by_xpath("//button[@type='submit']").click()
+    totp = TOTP(key_secret[4])
+    token = totp.now()
+    driver.find_element_by_xpath("//input[@label='External TOTP']").send_keys(token)
+    time.sleep(5)
+    request_token = driver.current_url.split('request_token=')[1][:32]
+    with open('request_token.txt', 'w') as the_file :
+        the_file.write(request_token)
+    driver.quit()
+    request_token = open("request_token.txt", "r").read()
+    key_secret = open("api_key2.txt", "r").read().split()
+    kite = KiteConnect(api_key=key_secret[0])
+    data = kite.generate_session(request_token, api_secret=key_secret[1])
+    with open('access_token.txt', 'w') as file:
+        file.write(data["access_token"])
+    print("Auto login completed")
+    return driver
